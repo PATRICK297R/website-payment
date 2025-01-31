@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Premium Patrick Botz</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #6c5ce7;
+            --secondary: #a8a5e6;
+            --bg: #ffffff;
+            --text: #2d3436;
+            --card-bg: #f8f9fa;
+        }
+
+        .dark-mode {
+            --bg: #2d3436;
+            --text: #ffffff;
+            --card-bg: #3b4142;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            transition: all 0.3s ease;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .theme-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            cursor: pointer;
+            padding: 10px;
+            border-radius: 50%;
+            background: var(--primary);
+            color: white;
+            z-index: 1001;
+        }
+
+        .title {
+            text-align: center;
+            margin-bottom: 3rem;
+            font-size: 2.5rem;
+            color: var(--primary);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .pricing-cards {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .card {
+            background: var(--card-bg);
+            padding: 2rem;
+            border-radius: 15px;
+            width: 300px;
+            text-align: center;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            transform: translateY(0);
+            opacity: 0;
+            animation: cardEntrance 0.8s ease forwards;
+        }
+
+        .card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.2);
+        }
+
+        .card h2 {
+            color: var(--primary);
+            margin-bottom: 1rem;
+        }
+
+        .price {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin: 1.5rem 0;
+            color: var(--text);
+        }
+
+        .features {
+            list-style: none;
+            margin: 1.5rem 0;
+        }
+
+        .features li {
+            margin: 0.8rem 0;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 1rem 2rem;
+            background: var(--primary);
+            color: white;
+            text-decoration: none;
+            border-radius: 25px;
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+            border: none;
+        }
+
+        .btn:active {
+            transform: scale(0.95);
+        }
+
+        .ripple {
+            position: absolute;
+            background: rgba(255,255,255,0.5);
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+            border-radius: 50%;
+            animation: rippleEffect 1s linear;
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            backdrop-filter: blur(5px);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .modal-content {
+            background: var(--card-bg);
+            padding: 2rem;
+            border-radius: 20px;
+            text-align: center;
+            position: relative;
+            transform: scale(0.8);
+            animation: modalEntrance 0.3s ease forwards;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            max-width: 90%;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            cursor: pointer;
+            font-size: 1.5rem;
+            color: var(--text);
+        }
+
+        .qris-image {
+            width: 300px;
+            height: 300px;
+            border-radius: 15px;
+            margin: 1rem 0;
+            border: 3px solid var(--primary);
+            transition: transform 0.3s ease;
+            cursor: pointer;
+        }
+
+        .payment-instruction {
+            margin: 1rem 0;
+            color: var(--text);
+            font-size: 0.9rem;
+        }
+
+        .payment-methods {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            margin: 1.5rem 0;
+        }
+
+        .payment-method {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            background: var(--bg);
+            border-radius: 10px;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+            border: 1px solid var(--primary);
+        }
+
+        .payment-method span:first-child {
+            font-weight: bold;
+            color: var(--primary);
+        }
+
+        .copy-number {
+            padding: 0.5rem 1rem;
+            background: var(--primary);
+            color: white;
+            border-radius: 20px;
+            font-size: 0.8rem;
+        }
+
+        .whatsapp-btn {
+            background: #25D366;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 1rem 2rem;
+            margin: 1rem auto;
+        }
+
+        /* Enlarged QRIS Styles */
+        .qris-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            backdrop-filter: blur(5px);
+            z-index: 1002;
+            justify-content: center;
+            align-items: center;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .qris-overlay.closing {
+            animation: fadeOut 0.3s ease forwards;
+        }
+
+        .qris-container {
+            position: relative;
+            max-width: 90%;
+            max-height: 90%;
+            animation: zoomIn 0.3s ease;
+        }
+
+        .qris-container.closing {
+            animation: zoomOut 0.3s ease forwards;
+        }
+
+        .enlarged-qris {
+            border: 3px solid var(--primary);
+            border-radius: 15px;
+            max-width: 100%;
+            max-height: 80vh;
+            transform: scale(0.95);
+            opacity: 0;
+            animation: qrisEntrance 0.3s ease forwards;
+        }
+
+        .close-qris {
+            position: absolute;
+            top: -15px;
+            right: -15px;
+            background: var(--primary);
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 1.5rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            opacity: 0;
+            animation: slideIn 0.3s 0.2s ease forwards;
+        }
+
+        @keyframes cardEntrance {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes rippleEffect {
+            from {
+                width: 0;
+                height: 0;
+                opacity: 1;
+            }
+            to {
+                width: 500px;
+                height: 500px;
+                opacity: 0;
+            }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes fadeOut {
+            to { opacity: 0; }
+        }
+
+        @keyframes modalEntrance {
+            to {
+                transform: scale(1);
+            }
+        }
+
+        @keyframes qrisEntrance {
+            from {
+                transform: scale(0.8);
+                opacity: 0;
+            }
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateY(20px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes zoomIn {
+            from {
+                transform: scale(0.8);
+                opacity: 0;
+            }
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        @keyframes zoomOut {
+            to {
+                transform: scale(0.8);
+                opacity: 0;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .pricing-cards {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .title {
+                font-size: 2rem;
+            }
+
+            .qris-image {
+                width: 250px;
+                height: 250px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="theme-toggle" onclick="toggleTheme()">
+        <i class="fas fa-moon"></i>
+    </div>
+
+    <div class="container">
+        <h1 class="title">List Harga Premium Patrick Botz</h1>
+        
+        <div class="pricing-cards">
+            <div class="card" style="animation-delay: 0.2s;">
+                <h2>7 Hari</h2>
+                <div class="price">Rp 2.000</div>
+                <ul class="features">
+                    <li><i class="fas fa-check"></i> Premium aktif 7 Hari</li>
+                    <li><i class="fas fa-check"></i> Unlimited Limit</li>
+                    <li><i class="fas fa-check"></i> Akses Fitur Premium</li>
+                </ul>
+                <button class="btn" onclick="handlePayment(event, '7 Hari')">Beli Sekarang</button>
+            </div>
+
+            <div class="card" style="animation-delay: 0.4s;">
+                <h2>1 Bulan</h2>
+                <div class="price">Rp 5.000</div>
+                <ul class="features">
+                    <li><i class="fas fa-check"></i> Premium Aktif 1 Bulan</li>
+                    <li><i class="fas fa-check"></i> Unlimited Limit</li>
+                    <li><i class="fas fa-check"></i> Akses Fitur Premium</li>
+                </ul>
+                <button class="btn" onclick="handlePayment(event, '1 Bulan')">Beli Sekarang</button>
+            </div>
+
+            <div class="card" style="animation-delay: 0.6s;">
+                <h2>Permanent</h2>
+                <div class="price">Rp 10.000</div>
+                <ul class="features">
+                    <li><i class="fas fa-check"></i>Premium aktif selamanya</li>
+                        <li><i class="fas fa-check"></i> Unlimited Limit</li>
+                    <li><i class="fas fa-check"></i> Akses Fitur Premium</li>
+                </ul>
+                <button class="btn" onclick="handlePayment(event, 'Permanent')">Beli Sekarang</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Pembayaran -->
+    <div class="modal" id="paymentModal">
+        <div class="modal-content">
+            <span class="modal-close" onclick="closeModal()">&times;</span>
+            <h2>Metode Pembayaran</h2>
+            
+            <div class="payment-methods">
+                <div class="payment-method" onclick="copyNumber()">
+                    <span>DANA</span>
+                    <span class="copy-number">Salin Nomor Pembayaran</span>
+                </div>
+
+                <div class="payment-method" onclick="copyNumber()">
+                    <span>OVO</span>
+                    <span class="copy-number">Salin Nomor Pembayaran</span>
+                </div>
+
+                <div class="payment-method" onclick="copyNumber()">
+                    <span>GOPAY</span>
+                    <span class="copy-number">Salin Nomor Pembayaran</span>
+                </div>
+            </div>
+
+            <h3>Atau Scan QRIS</h3>
+            <img src="https://i.supa.codes/TePWw" 
+                 alt="QRIS" 
+                 class="qris-image"
+                 onclick="zoomQRIS()">
+
+            <div class="payment-instruction">
+                <p>Setelah pembayaran berhasil, klik tombol di bawah untuk konfirmasi ke admin</p>
+            </div>
+
+            <a href="https://wa.me/6285735980188?text=Saya%20sudah%20membayar%20untuk%20paket%20" 
+               class="btn whatsapp-btn"
+               target="_blank"
+               id="whatsappBtn">
+                <i class="fab fa-whatsapp"></i>
+                Chat Admin
+            </a>
+        </div>
+    </div>
+
+    <!-- Enlarged QRIS -->
+    <div class="qris-overlay" id="qrisOverlay">
+        <div class="qris-container">
+            <img src="https://i.supa.codes/TePWw"
+                 class="enlarged-qris" 
+                 alt="QRIS Enlarged">
+            <div class="close-qris" onclick="closeQRIS()">&times;</div>
+        </div>
+    </div>
+
+    <script>
+        let selectedPackage = '';
+
+        // Dark/Light mode toggle
+        function toggleTheme() {
+            document.body.classList.toggle('dark-mode');
+            const themeToggle = document.querySelector('.theme-toggle');
+            const isDark = document.body.classList.contains('dark-mode');
+            themeToggle.innerHTML = isDark ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
+            localStorage.setItem('theme', isDark ? 'dark' : 'light');
+        }
+
+        // Load saved theme
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme === 'dark') {
+            document.body.classList.add('dark-mode');
+            document.querySelector('.theme-toggle').innerHTML = '<i class="fas fa-sun"></i>';
+        }
+
+        // Handle payment button click
+        function handlePayment(event, packageName) {
+            createRipple(event);
+            selectedPackage = packageName;
+            document.getElementById('whatsappBtn').href = 
+                `https://wa.me/6285735980188?text=Saya%20sudah%20membayar%20untuk%20paket%20${encodeURIComponent(packageName)}`;
+            showModal();
+        }
+
+        // Copy number to clipboard
+        function copyNumber() {
+            navigator.clipboard.writeText('085735980188').then(() => {
+                alert('Nomor berhasil disalin!');
+            });
+        }
+
+        // Zoom QRIS dengan animasi
+        function zoomQRIS() {
+            const overlay = document.getElementById('qrisOverlay');
+            overlay.style.display = 'flex';
+            overlay.classList.remove('closing');
+            overlay.querySelector('.qris-container').classList.remove('closing');
+        }
+
+        // Close QRIS dengan animasi
+        function closeQRIS() {
+            const overlay = document.getElementById('qrisOverlay');
+            const container = overlay.querySelector('.qris-container');
+            
+            overlay.classList.add('closing');
+            container.classList.add('closing');
+            
+            setTimeout(() => {
+                overlay.style.display = 'none';
+            }, 300);
+        }
+
+        // Modal functions
+        function showModal() {
+            document.getElementById('paymentModal').style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('paymentModal');
+            modal.style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+
+        // Ripple effect
+        function createRipple(event) {
+            const btn = event.currentTarget;
+            const ripple = document.createElement('span');
+            ripple.classList.add('ripple');
+            
+            const rect = btn.getBoundingClientRect();
+            ripple.style.left = (event.clientX - rect.left) + 'px';
+            ripple.style.top = (event.clientY - rect.top) + 'px';
+            
+            btn.appendChild(ripple);
+            setTimeout(() => ripple.remove(), 1000);
+        }
+
+        // Close modal on outside click
+        window.onclick = function(event) {
+            const modal = document.getElementById('paymentModal');
+            const qrisOverlay = document.getElementById('qrisOverlay');
+            
+            if (event.target === modal) closeModal();
+            if (event.target === qrisOverlay) closeQRIS();
+        }
+
+        // Close modal with ESC
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                closeModal();
+                closeQRIS();
+            }
+        });
+
+        // Scroll animation for cards
+        const cards = document.querySelectorAll('.card');
+        const observer = new IntersectionObserver(entries => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = 1;
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        });
+        cards.forEach(card => observer.observe(card));
+    </script>
+</body>
+</html>
