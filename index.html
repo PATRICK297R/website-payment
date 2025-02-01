@@ -289,6 +289,61 @@
             animation: slideIn 0.3s 0.2s ease forwards;
         }
 
+        /* Notifikasi Styles */
+.notification {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: #4CAF50;
+    color: white;
+    padding: 1rem 2rem;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    transform: translateX(150%);
+    transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    z-index: 1003;
+}
+
+.notification.active {
+    transform: translateX(0);
+}
+
+.notification-icon {
+    font-size: 1.2rem;
+}
+
+.notification-progress {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    height: 3px;
+    background: rgba(255,255,255,0.5);
+    width: 100%;
+    transform-origin: left;
+    animation: progress 3s linear forwards;
+}
+
+@keyframes progress {
+    from {
+        transform: scaleX(1);
+    }
+    to {
+        transform: scaleX(0);
+    }
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateX(100%);
+    }
+    to {
+        transform: translateX(0);
+    }
+}
+
         @keyframes cardEntrance {
             from {
                 opacity: 0;
@@ -482,6 +537,13 @@
         </div>
     </div>
 
+<!-- Notifikasi -->
+<div class="notification" id="notification">
+    <i class="fas fa-check-circle notification-icon"></i>
+    <span>Nomor berhasil disalin!</span>
+    <div class="notification-progress"></div>
+</div>
+    
     <script>
         let selectedPackage = '';
 
@@ -510,11 +572,28 @@
             showModal();
         }
 
-        // Copy number to clipboard
-        function copyNumber() {
-            navigator.clipboard.writeText('085735980188').then(() => {
-            });
-        }
+        // Tampilkan notifikasi
+function showNotification() {
+    const notification = document.getElementById('notification');
+    notification.classList.add('active');
+    
+    // Reset progress bar
+    const progress = notification.querySelector('.notification-progress');
+    progress.style.animation = 'none';
+    void progress.offsetHeight; // Trigger reflow
+    progress.style.animation = 'progress 3s linear forwards';
+
+    setTimeout(() => {
+        notification.classList.remove('active');
+    }, 3000);
+}
+
+// Contoh penggunaan: Salin nomor dan tampilkan notifikasi
+function copyNumber() {
+    navigator.clipboard.writeText('085735980188').then(() => {
+        showNotification();
+    });
+}
 
         // Zoom QRIS dengan animasi
         function zoomQRIS() {
